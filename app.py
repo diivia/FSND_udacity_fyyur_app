@@ -122,25 +122,18 @@ def venues():
 
     data=[]
     all_venues = db.session.query(Venue.city, Venue.state).distinct(Venue.city, Venue.state)
-    shows = db.session.query(func.count(Show.id)).group_by(Show.id).filter(Show.venue_id==6).all()
-    #print(shows)
-    test = db.session.query(Venue.city, Venue.state, func.count(Show.id)).group_by(Show.id, Venue.city, Venue.state).filter(Show.date>=datetime.now()).distinct(Venue.city, Venue.state).all()
-    #print(test)
-
     for venue in all_venues:
         #print(venue)
-        venues_in_city = db.session.query(Venue.id, Venue.name).filter(Venue.city == venue[0]).filter(Venue.state == venue[1]).all()
-        venues = db.session.query(Venue.id, Venue.name)
-        num_upcoming_shows = db.session.query(Show.id).filter(Show.venue_id==Venue.id).filter(Venue.city == venue[0])
+        city_venues = db.session.query(Venue.id, Venue.name).filter(Venue.city == venue[0]).filter(Venue.state == venue[1])
         entries = []
-        for venue_in_city in venues_in_city:
-            entry = {"id": venue_in_city[0], "name": venue_in_city[1]}
-            num_upcoming_shows = db.session.query(func.count(Show.id)).group_by(Show.id).filter(Show.venue_id==i[0]).scalar()
+        for city_venue in city_venues:
+            venue_entry = {"id": city_venue[0], "name": city_venue[1]}
+            num_upcoming_shows = db.session.query(func.count(Show.id)).group_by(Show.id).filter(Show.venue_id==city_venue[0]).scalar()
             if num_upcoming_shows is None:
-                entry["num_upcoming_shows"] = 0
+                venue_entry["num_upcoming_shows"] = 0
             else:
-                entry["num_upcoming_shows"] = num_upcoming_shows
-            entries.append(entry)
+                venue_entry["num_upcoming_shows"] = num_upcoming_shows
+            entries.append(venue_entry)
 
         data.append({ "city": venue[0], "state": venue[1], "venues": entries })
     print(data)
@@ -190,6 +183,17 @@ def search_venues():
 def show_venue(venue_id):
     # shows the venue page with the given venue_id
     # TODO: replace with real venue data from the venues table, using venue_id
+    data = []
+    venue = Venue.query.filter(Venue.id == venue_id).first()
+    if venue:
+        data = venue.__dict__
+    #print(data)
+
+    past_shows = Show.query.filter(Show.venue_id ==  venue_id).filter(Show.date < datetime.now()).all()
+    upcoming_shows = Show.query.filter(Show.venue_id ==  venue_id).filter(Show.date >= datetime.now()).all()
+    data["past_shows"] = create_show_entry(past_shows)
+    data["upcoming_shows"] = create_show_entry(upcoming_shows)
+
     data1 = {
         "id": 1,
         "name": "The Musical Hop",
@@ -267,8 +271,19 @@ def show_venue(venue_id):
         "past_shows_count": 1,
         "upcoming_shows_count": 1,
     }
-    data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
+    #data = list(filter(lambda d: d['id'] == venue_id, [data1, data2, data3]))[0]
     return render_template('pages/show_venue.html', venue=data)
+
+
+def create_show_entry(past_shows):
+    entries = []
+    for show in past_shows:
+        entry = {"artist_id": show.artist_id,
+                 "artist_name": db.session.query(Artist.name).filter(Artist.id == show.artist_id).scalar(),
+                 "artist_image_link": db.session.query(Artist.image_link).filter(Artist.id == show.artist_id).scalar(),
+                 "start_time": format_datetime(show.date.strftime("%m/%d/%Y, %H:%M:%S"))}
+        entries.append(entry)
+    return entries
 
 
 #  Create Venue
