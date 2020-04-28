@@ -8,6 +8,7 @@ import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from flask_migrate import Migrate
 import logging
 from logging import Formatter, FileHandler
@@ -45,6 +46,11 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     shows = db.relationship('Show', lazy=True, cascade='all, delete-orphan', backref='venue')
+    seeking_talent = db.Column(db.Boolean, nullable=False, default=False)
+    seeking_description = db.Column(db.String)
+
+    def __repr__(self):
+        return f'<Venue Name: {self.name}, City: {self.city}, State: {self.state}>'
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -61,6 +67,12 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
     shows = db.relationship('Show', lazy=True, cascade='all, delete-orphan', backref='artist')
+    website = db.Column(db.String)
+    seeking_venue = db.Column(db.Boolean, nullable=False, default=False)
+    seeking_description = db.Column(db.String)
+
+    def __repr__(self):
+        return f'<Artist Name: {self.name}, City: {self.city}, State: {self.state}>'
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -70,7 +82,6 @@ class Artist(db.Model):
 class Show(db.Model):
     __tablename__ = 'Show'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
     date = db.Column(db.DateTime)
     artist_id = db.Column(db.Integer, db.ForeignKey('Artist.id'), nullable=False)
     venue_id = db.Column(db.Integer, db.ForeignKey('Venue.id'), nullable=False)
@@ -108,7 +119,33 @@ def index():
 def venues():
     # TODO: replace with real venues data.
     #       num_shows should be aggregated based on number of upcoming shows per venue.
-    data = [{
+
+    data=[]
+    all_venues = db.session.query(Venue.city, Venue.state).distinct(Venue.city, Venue.state)
+    shows = db.session.query(func.count(Show.id)).group_by(Show.id).filter(Show.venue_id==6).all()
+    #print(shows)
+    test = db.session.query(Venue.city, Venue.state, func.count(Show.id)).group_by(Show.id, Venue.city, Venue.state).filter(Show.date>=datetime.now()).distinct(Venue.city, Venue.state).all()
+    #print(test)
+
+    for venue in all_venues:
+        #print(venue)
+        venues_in_city = db.session.query(Venue.id, Venue.name).filter(Venue.city == venue[0]).filter(Venue.state == venue[1]).all()
+        venues = db.session.query(Venue.id, Venue.name)
+        num_upcoming_shows = db.session.query(Show.id).filter(Show.venue_id==Venue.id).filter(Venue.city == venue[0])
+        entries = []
+        for venue_in_city in venues_in_city:
+            entry = {"id": venue_in_city[0], "name": venue_in_city[1]}
+            num_upcoming_shows = db.session.query(func.count(Show.id)).group_by(Show.id).filter(Show.venue_id==i[0]).scalar()
+            if num_upcoming_shows is None:
+                entry["num_upcoming_shows"] = 0
+            else:
+                entry["num_upcoming_shows"] = num_upcoming_shows
+            entries.append(entry)
+
+        data.append({ "city": venue[0], "state": venue[1], "venues": entries })
+    print(data)
+
+    data2 = [{
         "city": "San Francisco",
         "state": "CA",
         "venues": [{
