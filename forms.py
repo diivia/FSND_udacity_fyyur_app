@@ -76,7 +76,7 @@ class VenueForm(Form):
             ('WA', 'WA'),
             ('WV', 'WV'),
             ('WI', 'WI'),
-            ('WY', 'WY'),
+            ('WY', 'WY')
         ]
     )
     address = StringField(
@@ -110,7 +110,7 @@ class VenueForm(Form):
             ('Reggae', 'Reggae'),
             ('Rock n Roll', 'Rock n Roll'),
             ('Soul', 'Soul'),
-            ('Other', 'Other'),
+            ('Other', 'Other')
         ]
     )
     facebook_link = StringField(
@@ -177,12 +177,12 @@ class ArtistForm(Form):
             ('WA', 'WA'),
             ('WV', 'WV'),
             ('WI', 'WI'),
-            ('WY', 'WY'),
+            ('WY', 'WY')
         ]
     )
     phone = StringField(
         # TODO implement validation logic for state
-        'phone'
+        'phone', validators=[DataRequired()]
     )
     image_link = StringField(
         'image_link'
@@ -209,8 +209,9 @@ class ArtistForm(Form):
             ('Reggae', 'Reggae'),
             ('Rock n Roll', 'Rock n Roll'),
             ('Soul', 'Soul'),
-            ('Other', 'Other'),
-        ]
+            ('Other', 'Other')
+        ],
+        default= ('Rock n Roll', 'Rock n Roll')
     )
     facebook_link = StringField(
         # TODO implement enum restriction
