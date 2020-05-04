@@ -125,11 +125,15 @@ def venues():
 
     for venue in venue_query:
         #print(venue)
+        city = venue[0]
+        state = venue[1]
         city_venues = db.session.query(Venue.id, Venue.name).filter(Venue.city == venue[0]).filter(Venue.state == venue[1])
         entries = []
         for city_venue in city_venues:
-            venue_entry = {"id": city_venue[0], "name": city_venue[1]}
-            num_upcoming_shows = db.session.query(func.count(Show.id)).group_by(Show.id).filter(Show.venue_id==city_venue[0]).first()
+            id = city_venue[0]
+            name = city_venue[1]
+            venue_entry = {"id": id, "name": name}
+            num_upcoming_shows = db.session.query(func.count(Show.id)).group_by(Show.id).filter(Show.venue_id==id).filter(Show.date >= datetime.now()).first()
             if num_upcoming_shows is None:
                 venue_entry["num_upcoming_shows"] = 0
             else:
@@ -137,7 +141,7 @@ def venues():
             venue_entry["num_upcoming_shows"] = num_upcoming_shows
             entries.append(venue_entry)
 
-        data.append({ "city": venue[0], "state": venue[1], "venues": entries })
+        data.append({ "city": city, "state": state, "venues": entries })
     #print(data)
 
     data_mock = [{
