@@ -138,7 +138,7 @@ def venues():
             entries.append(venue_entry)
 
         data.append({ "city": venue[0], "state": venue[1], "venues": entries })
-    print(data)
+    #print(data)
 
     data_mock = [{
         "city": "San Francisco",
@@ -181,7 +181,7 @@ def search_venues():
         })
 
     response = {"count": len(venues), "data": data}
-    print(response)
+    #print(response)
 
     response_mock = {
         "count": 1,
@@ -332,7 +332,7 @@ def create_venue_submission():
         db.session.commit()
         flash('Venue ' + name + ' was successfully listed!')
     except:
-        print(venue)
+        #print(venue)
         db.session.rollback()
         flash('An error occurred. Venue ' + name + ' could not be listed.')
     finally:
@@ -389,7 +389,7 @@ def search_artists():
     # search for "band" should return "The Wild Sax Band".
     search_term = request.form.get('search_term', '')
     result = db.session.query(Artist.id, Artist.name).distinct(Artist.id).filter(Artist.name.ilike(f'%{search_term}%')).all()
-    print(result)
+    #print(result)
     response = {
         "count": len(result),
         "data": result
@@ -657,7 +657,7 @@ def create_artist_submission():
         db.session.commit()
         flash('Artist ' + name + ' was successfully listed!')
     except:
-        print(artist)
+        #print(artist)
         db.session.rollback()
         flash('An error occurred. Artist ' + name + ' could not be listed.')
     finally:
@@ -747,7 +747,7 @@ def create_show_submission():
         db.session.commit()
         flash('Show was successfully listed!')
     except:
-        print(show)
+        #print(show)
         db.session.rollback()
         flash('An error occurred. Show could not be listed.')
     finally:
