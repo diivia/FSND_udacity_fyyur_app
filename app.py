@@ -25,7 +25,7 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 
-# TODO: DONE: connect to a local postgresql database
+# TODO: DONE: in config connect to a local postgresql database
 migrate = Migrate(app, db)
 
 
