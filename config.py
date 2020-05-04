@@ -12,5 +12,5 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 # Connect to the database
 
 
-# TODO IMPLEMENT DATABASE URL
+# TODO: DONE: IMPLEMENT DATABASE URL
 SQLALCHEMY_DATABASE_URI = 'postgresql://julijakondratjeva@localhost:5432/fyyur'

@@ -52,7 +52,7 @@ class Venue(db.Model):
     def __repr__(self):
         return f'<Venue Name: {self.name}, City: {self.city}, State: {self.state}>'
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # TODO: DONE: implement any missing fields, as a database migration using Flask-Migrate
 
 
 class Artist(db.Model):
@@ -74,10 +74,10 @@ class Artist(db.Model):
     def __repr__(self):
         return f'<Artist Name: {self.name}, City: {self.city}, State: {self.state}>'
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # TODO: DONE: implement any missing fields, as a database migration using Flask-Migrate
 
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+# TODO: DONE Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 class Show(db.Model):
     __tablename__ = 'Show'
@@ -117,7 +117,7 @@ def index():
 
 @app.route('/venues')
 def venues():
-    # TODO: replace with real venues data.
+    # TODO: DONE: replace with real venues data.
     #       num_shows should be aggregated based on number of upcoming shows per venue.
 
     data=[]
@@ -140,7 +140,7 @@ def venues():
         data.append({ "city": venue[0], "state": venue[1], "venues": entries })
     print(data)
 
-    data2 = [{
+    data_mock = [{
         "city": "San Francisco",
         "state": "CA",
         "venues": [{
@@ -183,7 +183,7 @@ def search_venues():
     response = {"count": len(venues), "data": data}
     print(response)
 
-    response2 = {
+    response_mock = {
         "count": 1,
         "data": [{
             "id": 2,
@@ -338,11 +338,7 @@ def create_venue_submission():
     finally:
         db.session.close()
 
-    # on successful db insert, flash success
-    #flash('Venue ' + request.form['name'] + ' was successfully listed!')
     # TODO: DONE: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     return render_template('pages/home.html')
 
 
@@ -372,8 +368,8 @@ def delete_venue(venue_id):
 @app.route('/artists')
 def artists():
     data = db.session.query(Artist.id, Artist.name).all()
-    # TODO: replace with real data returned from querying the database
-    data2 = [{
+    # TODO: DONE: replace with real data returned from querying the database
+    data_mock = [{
         "id": 4,
         "name": "Guns N Petals",
     }, {
@@ -398,7 +394,7 @@ def search_artists():
         "count": len(result),
         "data": result
     }
-    response2 = {
+    response_mock = {
         "count": 1,
         "data": [{
             "id": 4,
@@ -524,7 +520,8 @@ def edit_artist(artist_id):
     form.image_link.data = artist.image_link
     form.genres.data = artist.genres
     form.facebook_link.data = artist.facebook_link
-    artist2 = {
+
+    artist_mock = {
         "id": 4,
         "name": "Guns N Petals",
         "genres": ["Rock n Roll"],
@@ -537,13 +534,13 @@ def edit_artist(artist_id):
         "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
         "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
     }
-    # TODO: populate form with fields from artist with ID <artist_id>
+    # TODO: DONE: populate form with fields from artist with ID <artist_id>
     return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
-    # TODO: take values from the form submitted, and update existing
+    # TODO: DONE: take values from the form submitted, and update existing
     # artist record with ID <artist_id> using the new attributes
     try:
         form = ArtistForm()
@@ -574,7 +571,7 @@ def edit_artist_submission(artist_id):
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
     form = VenueForm()
-    venue = Venue.query.filter(id == venue_id)
+    venue = db.session.query(Venue).filter(Venue.id ==  venue_id).first()
 
     form.name.data = venue.name
     form.genres.data = venue.genres
@@ -585,7 +582,7 @@ def edit_venue(venue_id):
     form.facebook_link.data = venue.facebook_link
     form.image_link.data = venue.image_link
 
-    venue2 = {
+    venue_mock = {
         "id": 1,
         "name": "The Musical Hop",
         "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
@@ -599,13 +596,13 @@ def edit_venue(venue_id):
         "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
         "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
     }
-    # TODO: populate form with values from venue with ID <venue_id>
+    # TODO: DONE: populate form with values from venue with ID <venue_id>
     return render_template('forms/edit_venue.html', form=form, venue=venue)
 
 
 @app.route('/venues/<int:venue_id>/edit', methods=['POST'])
 def edit_venue_submission(venue_id):
-    # TODO: take values from the form submitted, and update existing
+    # TODO: DONE: take values from the form submitted, and update existing
     # venue record with ID <venue_id> using the new attributes
     try:
         form = VenueForm()
@@ -644,8 +641,8 @@ def create_artist_form():
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
     # called upon submitting the new artist listing form
-    # TODO: insert form data as a new Venue record in the db, instead
-    # TODO: modify data to be the data object returned from db insertion
+    # TODO: DONE: insert form data as a new Venue record in the db, instead
+    # TODO: DONE: modify data to be the data object returned from db insertion
     try:
         form = ArtistForm()
         artist = Artist(name=form.name.data,
@@ -666,10 +663,7 @@ def create_artist_submission():
     finally:
         db.session.close()
 
-    # on successful db insert, flash success
-    #flash('Artist ' + request.form['name'] + ' was successfully listed!')
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+    # TODO: DONE: on unsuccessful db insert, flash an error instead.
     return render_template('pages/home.html')
 
 
@@ -679,7 +673,7 @@ def create_artist_submission():
 @app.route('/shows')
 def shows():
     # displays list of shows at /shows
-    # TODO: replace with real venues data.
+    # TODO: DONE: replace with real venues data.
     #       num_shows should be aggregated based on number of upcoming shows per venue.
     data = []
 
@@ -744,7 +738,7 @@ def create_shows():
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
     # called to create new shows in the db, upon submitting new show listing form
-    # TODO: insert form data as a new Show record in the db, instead
+    # TODO: DONE: insert form data as a new Show record in the db, instead
 
     try:
         form = ShowForm()
@@ -759,11 +753,7 @@ def create_show_submission():
     finally:
         db.session.close()
 
-    # on successful db insert, flash success
-    #flash('Show was successfully listed!')
     # TODO: DONE: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Show could not be listed.')
-    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     return render_template('pages/home.html')
 
 
