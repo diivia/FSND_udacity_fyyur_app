@@ -328,12 +328,13 @@ def create_venue_submission():
                      image_link=form.image_link.data,
                      facebook_link=form.facebook_link.data)
         db.session.add(venue)
+        name = venue.name
         db.session.commit()
-        flash('Venue ' + request.form['name'] + ' was successfully listed!')
+        flash('Venue ' + name + ' was successfully listed!')
     except:
         print(venue)
         db.session.rollback()
-        flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
+        flash('An error occurred. Venue ' + name + ' could not be listed.')
     finally:
         db.session.close()
 
@@ -557,12 +558,13 @@ def edit_artist_submission(artist_id):
         artist.facebook_link = form.facebook_link.data
 
         db.session.add(artist)
+        name = artist.name
         db.session.commit()
 
-        flash('Artist ' + request.form['name'] + ' was successfully updated.')
+        flash('Artist ' + name + ' was successfully updated.')
     except:
         db.session.rollback()
-        flash('An artist was not updated')
+        flash('An artist ' + name + ' was not updated')
     finally:
         db.session.close()
 
@@ -654,13 +656,13 @@ def create_artist_submission():
             image_link=form.image_link.data,
             facebook_link=form.facebook_link.data)
         db.session.add(artist)
-        artist_name = artist.name
+        name = artist.name
         db.session.commit()
-        flash('Artist ' + artist_name + ' was successfully listed!')
+        flash('Artist ' + name + ' was successfully listed!')
     except:
         print(artist)
         db.session.rollback()
-        flash('An error occurred. Artist ' + artist_name + ' could not be listed.')
+        flash('An error occurred. Artist ' + name + ' could not be listed.')
     finally:
         db.session.close()
 
